@@ -9,11 +9,10 @@ clean:
 	rm -rf ./*.log
 	rm -rf ./*.svg
 	rm -rf ./go.mod
+	rm -rf ./go.sum
 	rm -rf bench
 	rm -rf pprof
 	rm -rf vendor
-	go mod init
-	go mod tidy
 
 
 bench: clean
