@@ -25,21 +25,12 @@ func main() {
 
 	fmt.Printf("s1=%v\ns2=%v\ns3=%v\ns4=%v\n", s1, s2, s3, s4)
 
-<<<<<<< HEAD
-	fmt.Printf("nanonow %v\nnow unixnano %v\nnow add unixnano%v\nnanonow + dur %v\nstring %v\n",
-		fastime.UnixNanoNow(),
-		fastime.Now().Unix(),
-		fastime.Now().Add(time.Second),
-		fastime.UnixNanoNow()+int64(time.Second),
-		string(fastime.FormattedNow()))
-=======
 	fmt.Printf("nanonow %v\nnow unixnano %v\nnow add unixnano%v\nnanonow + dur %v\nstring %v",
 		t.UnixNanoNow(),
 		t.Now().Unix(),
 		t.Now().Add(time.Second),
 		t.UnixNanoNow()+int64(time.Second),
 		string(t.FormattedNow()))
->>>>>>> 2e007e5c7c9767c417a0225a100dfe5cabbb1716
 
 	for i := 0; i < 30; i++ {
 		time.Sleep(time.Millisecond * 400)
