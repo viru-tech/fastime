@@ -87,7 +87,7 @@ func (f *Fastime) update() *Fastime {
 }
 
 func (f *Fastime) refresh() *Fastime {
-	return f.store(f.Now())
+	return f.store(f.now())
 }
 
 func (f *Fastime) store(t time.Time) *Fastime {
