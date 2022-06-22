@@ -3,7 +3,6 @@ package fastime
 import (
 	"context"
 	"reflect"
-	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -22,6 +21,53 @@ func TestNew(t *testing.T) {
 			time.Sleep(time.Second * 2)
 			if (time.Now().Unix() - f.Now().Unix()) > 1000 {
 				t.Error("time is not correct so daemon is not started")
+			}
+		})
+	}
+}
+
+func TestNewStatic(t *testing.T) {
+	tests := []struct {
+		name     string
+		testTime time.Time
+	}{
+		{
+			name:     "static works correctly",
+			testTime: time.Date(2022, 06, 22, 17, 00, 00, 00, time.UTC),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := NewStatic(tt.testTime)
+			time.Sleep(time.Second * 2)
+			if f.Now() != tt.testTime {
+				t.Error("time is not static")
+			}
+		})
+	}
+}
+
+func TestNewStaticWithFormat(t *testing.T) {
+	tests := []struct {
+		name     string
+		testTime time.Time
+		format   string
+	}{
+		{
+			name:     "static with format works correctly",
+			testTime: time.Date(2022, 06, 22, 16, 30, 00, 00, time.UTC),
+			format:   time.RFC1123,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := NewStaticWithFormat(tt.testTime, tt.format)
+			time.Sleep(time.Second * 2)
+			if f.Now() != tt.testTime {
+				t.Error("time is not static")
+			}
+			if f.GetFormat() != tt.format {
+				t.Error("time not in correct format")
 			}
 		})
 	}
@@ -70,14 +116,9 @@ func TestStop(t *testing.T) {
 }
 
 func TestFastime_Now(t *testing.T) {
-	type fields struct {
-		t      atomic.Value
-		cancel context.CancelFunc
-	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   time.Time
+		name string
+		want time.Time
 	}{
 		{
 			name: "time equality",
@@ -94,13 +135,8 @@ func TestFastime_Now(t *testing.T) {
 }
 
 func TestFastime_Stop(t *testing.T) {
-	type fields struct {
-		t      atomic.Value
-		cancel context.CancelFunc
-	}
 	tests := []struct {
-		name   string
-		fields fields
+		name string
 	}{
 		{
 			name: "check stop",

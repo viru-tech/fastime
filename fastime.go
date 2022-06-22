@@ -47,6 +47,29 @@ func New() Fastime {
 	return newFastime()
 }
 
+// NewStatic returns new Fastime that initialized with given time.
+// Returned instance is not updated automatically.Call Fastime.StartTimerD
+// to start update in the background. This function is useful in testing.
+func NewStatic(t time.Time) Fastime {
+	f := newFastime()
+	f.SetLocation(t.Location())
+	f.store(t)
+
+	return f
+}
+
+// NewStaticWithFormat returns new Fastime that is initialized with the given time and format.
+// Returned instance is not updated automatically.Call Fastime.StartTimerD
+// to start update in the background. This function is useful in testing.
+func NewStaticWithFormat(t time.Time, format string) Fastime {
+	f := newFastime()
+	f.SetLocation(t.Location()).
+		SetFormat(format)
+	f.store(t)
+
+	return f
+}
+
 func newFastime() *fastime {
 	f := &fastime{
 		t: new(atomic.Value),

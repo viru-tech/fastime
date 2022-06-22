@@ -45,9 +45,9 @@ mem:
 	go tool pprof --alloc_space pprof/fastime-test.bin pprof/mem-fastime.out
 
 lint:
-	gometalinter --enable-all . | rg -v comment
+	golangci-lint run
 
-test: clean
+test:
 	GO111MODULE=on go test --race -v $(go list ./... | rg -v vendor)
 
 contributors:
