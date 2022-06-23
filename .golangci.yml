@@ -16,7 +16,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(github.com)
+      - prefix(github.com/viru-tech)
   gocyclo:
     min-complexity: 20
   cyclop:

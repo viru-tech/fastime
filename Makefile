@@ -48,7 +48,7 @@ lint:
 	golangci-lint run
 
 test:
-	GO111MODULE=on go test --race -v $(go list ./... | rg -v vendor)
+	go test --race -v $(go list ./... | rg -v vendor)
 
 contributors:
 	git log --format='%aN <%aE>' | sort -fu > CONTRIBUTORS
