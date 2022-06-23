@@ -28,12 +28,12 @@ func TestNew(t *testing.T) {
 
 func TestNewStatic(t *testing.T) {
 	tests := []struct {
-		name     string
 		testTime time.Time
+		name     string
 	}{
 		{
 			name:     "static works correctly",
-			testTime: time.Date(2022, 06, 22, 17, 00, 00, 00, time.UTC),
+			testTime: time.Date(2022, 0o6, 22, 17, 0o0, 0o0, 0o0, time.UTC),
 		},
 	}
 	for _, tt := range tests {
@@ -55,7 +55,7 @@ func TestNewStaticWithFormat(t *testing.T) {
 	}{
 		{
 			name:     "static with format works correctly",
-			testTime: time.Date(2022, 06, 22, 16, 30, 00, 00, time.UTC),
+			testTime: time.Date(2022, 0o6, 22, 16, 30, 0o0, 0o0, time.UTC),
 			format:   time.RFC1123,
 		},
 	}
@@ -110,15 +110,14 @@ func TestStop(t *testing.T) {
 			if now == time.Now().Unix() {
 				t.Error("refresh daemon stopped but time is same")
 			}
-
 		})
 	}
 }
 
 func TestFastime_Now(t *testing.T) {
 	tests := []struct {
-		name string
 		want time.Time
+		name string
 	}{
 		{
 			name: "time equality",
@@ -156,7 +155,6 @@ func TestFastime_Stop(t *testing.T) {
 			if now == time.Now().Unix() {
 				t.Error("refresh daemon stopped but time is same")
 			}
-
 		})
 	}
 }
@@ -290,8 +288,8 @@ func TestFastime_UnixUNanoNow(t *testing.T) {
 
 func TestFastime_refresh(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "refresh",
@@ -325,6 +323,7 @@ func TestSetFormat(t *testing.T) {
 		})
 	}
 }
+
 func TestFastime_SetFormat(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -363,8 +362,8 @@ func TestFormattedNow(t *testing.T) {
 
 func TestFastime_FormattedNow(t *testing.T) {
 	tests := []struct {
-		name string
 		f    Fastime
+		name string
 	}{
 		{
 			name: "fetch",
@@ -380,8 +379,8 @@ func TestFastime_FormattedNow(t *testing.T) {
 
 func TestFastime_now(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "now",
@@ -399,8 +398,8 @@ func TestFastime_now(t *testing.T) {
 
 func TestFastime_update(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "update",
@@ -418,8 +417,8 @@ func TestFastime_update(t *testing.T) {
 
 func TestFastime_store(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "store",
@@ -434,5 +433,4 @@ func TestFastime_store(t *testing.T) {
 			}
 		})
 	}
-
 }

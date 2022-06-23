@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/viru-tech/fastime/v2"
 	"time"
+
+	"github.com/viru-tech/fastime"
 )
 
 func main() {

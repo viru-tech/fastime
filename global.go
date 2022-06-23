@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//nolint:gochecknoglobals
 var (
 	once     sync.Once
 	instance Fastime

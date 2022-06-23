@@ -26,18 +26,18 @@ type Fastime interface {
 
 // Fastime is fastime's base struct, it's stores atomic time object
 type fastime struct {
-	uut           uint32
-	uunt          uint32
-	dur           int64
-	ut            int64
-	unt           int64
-	correctionDur time.Duration
+	cancel        context.CancelFunc
 	running       *atomic.Value
 	t             *atomic.Value
 	ft            *atomic.Value
 	format        *atomic.Value
 	location      *atomic.Value
-	cancel        context.CancelFunc
+	correctionDur time.Duration
+	uut           uint32
+	uunt          uint32
+	dur           int64
+	ut            int64
+	unt           int64
 }
 
 const bufSize = 64
@@ -63,8 +63,8 @@ func NewStatic(t time.Time) Fastime {
 // to start update in the background. This function is useful in testing.
 func NewStaticWithFormat(t time.Time, format string) Fastime {
 	f := newFastime()
-	f.SetLocation(t.Location()).
-		SetFormat(format)
+	f.SetLocation(t.Location())
+	f.SetFormat(format)
 	f.store(t)
 
 	return f
@@ -111,14 +111,13 @@ func (f *fastime) refresh() *fastime {
 	return f.store(f.now())
 }
 
-func (f *fastime) newBuffer(max int) (b []byte) {
+func (f *fastime) newBuffer(max int) []byte {
 	if max < bufSize {
 		var buf [bufSize]byte
-		b = buf[:0]
-	} else {
-		b = make([]byte, 0, max)
+		return buf[:0]
 	}
-	return b
+
+	return make([]byte, 0, max)
 }
 
 func (f *fastime) store(t time.Time) *fastime {
