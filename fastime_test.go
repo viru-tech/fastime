@@ -3,7 +3,6 @@ package fastime
 import (
 	"context"
 	"reflect"
-	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -27,57 +26,57 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestNow(t *testing.T) {
+func TestNewStatic(t *testing.T) {
 	tests := []struct {
-		name string
+		testTime time.Time
+		name     string
 	}{
 		{
-			name: "time equality",
+			name:     "static works correctly",
+			testTime: time.Date(2022, 0o6, 22, 17, 0o0, 0o0, 0o0, time.UTC),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if (time.Now().Unix() - Now().Unix()) > 1000 {
-				t.Error("time is not correct")
+			f := NewStatic(tt.testTime)
+			time.Sleep(time.Second * 2)
+			if f.Now() != tt.testTime {
+				t.Error("time is not static")
 			}
 		})
 	}
 }
 
-func TestStop(t *testing.T) {
+func TestNewStaticWithFormat(t *testing.T) {
 	tests := []struct {
-		name string
+		name     string
+		testTime time.Time
+		format   string
 	}{
 		{
-			name: "check stop",
+			name:     "static with format works correctly",
+			testTime: time.Date(2022, 0o6, 22, 16, 30, 0o0, 0o0, time.UTC),
+			format:   time.RFC1123,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			now := Now().Unix()
-			if (time.Now().Unix() - now) > 1000 {
-				t.Error("time is not correct")
+			f := NewStaticWithFormat(tt.testTime, tt.format)
+			time.Sleep(time.Second * 2)
+			if f.Now() != tt.testTime {
+				t.Error("time is not static")
 			}
-			Stop()
-			time.Sleep(time.Second * 3)
-			now = Now().Unix()
-			if now == time.Now().Unix() {
-				t.Error("refresh daemon stopped but time is same")
+			if f.GetFormat() != tt.format {
+				t.Error("time not in correct format")
 			}
-
 		})
 	}
 }
 
 func TestFastime_Now(t *testing.T) {
-	type fields struct {
-		t      atomic.Value
-		cancel context.CancelFunc
-	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   time.Time
+		want time.Time
+		name string
 	}{
 		{
 			name: "time equality",
@@ -94,13 +93,8 @@ func TestFastime_Now(t *testing.T) {
 }
 
 func TestFastime_Stop(t *testing.T) {
-	type fields struct {
-		t      atomic.Value
-		cancel context.CancelFunc
-	}
 	tests := []struct {
-		name   string
-		fields fields
+		name string
 	}{
 		{
 			name: "check stop",
@@ -120,24 +114,6 @@ func TestFastime_Stop(t *testing.T) {
 			if now == time.Now().Unix() {
 				t.Error("refresh daemon stopped but time is same")
 			}
-
-		})
-	}
-}
-
-func TestUnixNow(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		{
-			name: "time equality",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if UnixNow() != Now().Unix() {
-				t.Error("time is not correct")
-			}
 		})
 	}
 }
@@ -155,23 +131,6 @@ func TestFastime_UnixNow(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if f.UnixNow() != f.Now().Unix() {
-				t.Error("time is not correct")
-			}
-		})
-	}
-}
-
-func TestUnixUNow(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		{
-			name: "time equality",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if UnixUNow() != uint32(Now().Unix()) {
 				t.Error("time is not correct")
 			}
 		})
@@ -216,23 +175,6 @@ func TestFastime_UnixNanoNow(t *testing.T) {
 	}
 }
 
-func TestUnixUNanoNow(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		{
-			name: "time equality",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if UnixUNanoNow() != uint32(Now().UnixNano()) {
-				t.Error("time is not correct")
-			}
-		})
-	}
-}
-
 func TestFastime_UnixUNanoNow(t *testing.T) {
 	tests := []struct {
 		name string
@@ -254,8 +196,8 @@ func TestFastime_UnixUNanoNow(t *testing.T) {
 
 func TestFastime_refresh(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "refresh",
@@ -271,24 +213,6 @@ func TestFastime_refresh(t *testing.T) {
 	}
 }
 
-func TestSetFormat(t *testing.T) {
-	tests := []struct {
-		name   string
-		format string
-	}{
-		{
-			name:   "set RFC3339",
-			format: time.RFC3339,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := SetFormat(tt.format); !reflect.DeepEqual(got.GetFormat(), time.RFC3339) {
-				t.Errorf("SetFormat() = %v, want %v", got.GetFormat(), time.RFC3339)
-			}
-		})
-	}
-}
 func TestFastime_SetFormat(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -310,25 +234,10 @@ func TestFastime_SetFormat(t *testing.T) {
 	}
 }
 
-func TestFormattedNow(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		{
-			name: "fetch",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Log(string(FormattedNow()))
-		})
-	}
-}
-
 func TestFastime_FormattedNow(t *testing.T) {
 	tests := []struct {
-		name string
 		f    Fastime
+		name string
 	}{
 		{
 			name: "fetch",
@@ -344,8 +253,8 @@ func TestFastime_FormattedNow(t *testing.T) {
 
 func TestFastime_now(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "now",
@@ -363,8 +272,8 @@ func TestFastime_now(t *testing.T) {
 
 func TestFastime_update(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "update",
@@ -382,8 +291,8 @@ func TestFastime_update(t *testing.T) {
 
 func TestFastime_store(t *testing.T) {
 	tests := []struct {
-		name string
 		f    *fastime
+		name string
 	}{
 		{
 			name: "store",
@@ -398,5 +307,4 @@ func TestFastime_store(t *testing.T) {
 			}
 		})
 	}
-
 }

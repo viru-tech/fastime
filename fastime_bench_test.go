@@ -11,7 +11,8 @@ func BenchmarkFastime(b *testing.B) {
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			Now()
+			t := newFastime()
+			t.Now()
 		}
 	})
 }

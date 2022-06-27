@@ -45,10 +45,10 @@ mem:
 	go tool pprof --alloc_space pprof/fastime-test.bin pprof/mem-fastime.out
 
 lint:
-	gometalinter --enable-all . | rg -v comment
+	golangci-lint run
 
-test: clean
-	GO111MODULE=on go test --race -v $(go list ./... | rg -v vendor)
+test:
+	go test --race -v $(go list ./... | rg -v vendor)
 
 contributors:
 	git log --format='%aN <%aE>' | sort -fu > CONTRIBUTORS
