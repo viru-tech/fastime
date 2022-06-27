@@ -1,3 +1,3 @@
-module github.com/viru-tech/fastime
+module github.com/viru-tech/fastime/v2
 
 go 1.18
