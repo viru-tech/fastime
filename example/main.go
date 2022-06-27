@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/viru-tech/fastime"
+	"github.com/viru-tech/fastime/v2"
 )
 
 func main() {
