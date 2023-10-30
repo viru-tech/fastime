@@ -2,6 +2,7 @@ package fastime
 
 import (
 	"context"
+	"math"
 	"reflect"
 	"testing"
 	"time"
@@ -187,8 +188,10 @@ func TestFastime_UnixUNanoNow(t *testing.T) {
 	f := New().StartTimerD(context.Background(), time.Nanosecond)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if f.UnixUNanoNow() != uint32(f.Now().UnixNano()) {
-				t.Error("time is not correct")
+			exp := f.UnixUNanoNow()
+			act := uint32(f.Now().UnixNano())
+			if exp != act {
+				t.Errorf("time is not correct, exp: %v, actual: %v", exp, act)
 			}
 		})
 	}
@@ -304,6 +307,32 @@ func TestFastime_store(t *testing.T) {
 			n := tt.f.now()
 			if got := tt.f.store(n); tt.f.Now().UnixNano() != n.UnixNano() {
 				t.Errorf("time didn't match Fastime.store() = %v", got.Now())
+			}
+		})
+	}
+}
+
+func TestFastime_Since(t *testing.T) {
+	tests := []struct {
+		name string
+	}{
+		{
+			name: "since",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := New().StartTimerD(context.Background(), time.Millisecond*5)
+			now := f.Now()
+			timeNow := time.Now()
+			time.Sleep(time.Second)
+			since1 := f.Since(now)
+			since2 := time.Since(timeNow)
+			if since1 < 50*time.Millisecond {
+				t.Errorf("since is not correct.\tfastime.Now: %v,\ttime.Now: %v\tsince1: %d, \tsince2: %d", now.UnixNano(), timeNow.UnixNano(), since1, since2)
+			}
+			if math.Abs(float64(since1-since2)) > float64(50*time.Millisecond) {
+				t.Errorf("since error too large.\tfastime.Now: %v,\ttime.Now: %v\tsince1: %d, \tsince2: %d", now.UnixNano(), timeNow.UnixNano(), since1, since2)
 			}
 		})
 	}
